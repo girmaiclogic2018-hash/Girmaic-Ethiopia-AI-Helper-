@@ -1,0 +1,6 @@
+{
+  "name": "GIRMAIC Ethiopia AI Helper",
+  "description": "An AI-powered assistant supporting Ethiopians with job, education, agriculture, small business, and government services in five major languages.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

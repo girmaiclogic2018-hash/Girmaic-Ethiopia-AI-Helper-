@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper to check if record corresponds to ownership
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Profile Rules
+    match /users/{uid} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(uid);
+      
+      // Sub-collections corresponding to CV drafts
+      match /cvs/{cvId} {
+        allow read, write: if isOwner(uid);
+      }
+      
+      // Educational Quiz progress tracking
+      match /quizzes/{quizId} {
+        allow read, write: if isOwner(uid);
+      }
+      
+      // Farming Log data collection
+      match /crops/{reportId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+  }
+}
