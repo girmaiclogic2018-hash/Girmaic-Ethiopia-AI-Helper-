@@ -161,122 +161,6 @@ export default function App() {
   }, []);
 
   // --- SPEECH RESPONSE OUTPUT ---
-  const convertToSpokenAmharic = (text: string): string => {
-    let spoken = text;
-    
-    // 1. Core Dictionary & Abbreviation Expansions (Case-Insensitive)
-    const dict: [RegExp, string][] = [
-      [/\bkg\b/gi, " ኪሎ ግራም "],
-      [/\bha\b/gi, " ሄክታር "],
-      [/\bkm\b/gi, " ኪሎ ሜትር "],
-      [/\b°C\b/gi, " ዲግሪ ሴልሺየስ "],
-      [/%/g, " በመቶ "],
-      [/\$/g, " ዶላር "],
-      [/\bUSD\b/gi, " ዶላር "],
-      [/\bETB\b/gi, " የኢትዮጵያ ብር "],
-      [/\bCV\b/gi, " የሕይወት ታሪክ "],
-      [/\bAI\b/gi, " ሰው ሠራሽ ብልህነት "],
-      [/\bSTEM\b/gi, " ሳይንስ ቴክኖሎጂ ምህንድስና እና ሒሳብ "],
-      [/\bNPS\b/gi, " ኤን ፒ ኤስ "],
-      [/\bQ&A\b/gi, " ጥያቄ እና መልስ "],
-      [/\bprofile\b/gi, " የግል መገለጫ "],
-      [/\bremote\s+job\b/gi, " የርቀት ሥራ "],
-      [/\bremote\s+jobs\b/gi, " የርቀት ሥራ "],
-      [/\bapplication\b/gi, " ማመልከቻ "],
-      [/\btraining\b/gi, " ሥልጠና "],
-      [/\bcareer\b/gi, " ሙያ "],
-      [/\bcourse\b/gi, " ኮርስ "],
-      [/\bUpwork\b/gi, " አፕወርክ "],
-      [/\bUrea\b/gi, " ዩሪያ "],
-      [/\bTeff\b/gi, " ጤፍ "],
-      [/\bTef\b/gi, " ጤፍ "]
-    ];
-
-    for (const [pattern, replacement] of dict) {
-      spoken = spoken.replace(pattern, replacement);
-    }
-    
-    // 2. Amharic Digit & Number Pronunciation System
-    const amharicUnits = ["", "አንድ", "ሁለት", "ሦስት", "አራት", "አምስት", "ስድስት", "ሰባት", "ስምንት", "ዘጠኝ"];
-    const amharicTens = ["", "አስር", "ሃያ", "ሰላሳ", "አርባ", "ሃምሳ", "ስልሳ", "ሰባ", "ሰማንያ", "ዘጠና"];
-    
-    const numToWords = (num: number): string => {
-      if (isNaN(num)) return "";
-      if (num === 0) return "ዜሮ";
-      
-      let words = "";
-      if (num < 0) {
-        words += "አሉታዊ ";
-        num = Math.abs(num);
-      }
-      
-      if (num >= 1000000) {
-        const millions = Math.floor(num / 1000000);
-        words += numToWords(millions) + " ሚሊዮን ";
-        num %= 1000000;
-      }
-      if (num >= 1000) {
-        const thousands = Math.floor(num / 1000);
-        words += (thousands === 1 ? "አንድ" : numToWords(thousands)) + " ሺህ ";
-        num %= 1000;
-      }
-      if (num >= 100) {
-        const hundreds = Math.floor(num / 100);
-        words += (hundreds === 1 ? "አንድ" : amharicUnits[hundreds]) + " መቶ ";
-        num %= 100;
-      }
-      if (num >= 10) {
-        if (num >= 11 && num <= 19) {
-          words += "አስራ " + amharicUnits[num - 10];
-          num = 0;
-        } else {
-          const tens = Math.floor(num / 10);
-          words += amharicTens[tens] + " ";
-          num %= 10;
-        }
-      }
-      if (num > 0) {
-        words += amharicUnits[Math.floor(num)];
-      }
-      return words.trim();
-    };
-
-    const parseNumString = (numStr: string): string => {
-      if (numStr.includes('.')) {
-        const parts = numStr.split('.');
-        const wholePart = parseInt(parts[0], 10);
-        const fracPart = parts[1];
-        
-        let fracWords = "";
-        for (let i = 0; i < fracPart.length; i++) {
-          const digit = parseInt(fracPart[i], 10);
-          if (fracWords) fracWords += " ";
-          fracWords += digit === 0 ? "ዜሮ" : amharicUnits[digit];
-        }
-        
-        const wholeWords = isNaN(wholePart) ? "" : numToWords(wholePart);
-        return (wholeWords || "ዜሮ") + " ነጥብ " + fracWords;
-      }
-      return numToWords(parseInt(numStr, 10));
-    };
-
-    // Replace all digits/numbers and decimals
-    spoken = spoken.replace(/\b\d+(\.\d+)?\b/g, (match) => {
-      return " " + parseNumString(match) + " ";
-    });
-
-    // 3. Spoken Pause & Phonetic Polishing (Amharic punctuations: "።" -> ".", "፣" -> ",", "፤" -> ";")
-    // This allows browser SpeechSynthesisUtterance chunks to insert breathing pauses naturally
-    spoken = spoken
-      .replace(/።/g, " . ")
-      .replace(/፣/g, " , ")
-      .replace(/፤/g, " ; ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    return spoken;
-  };
-
   const speakResponse = (text: string) => {
     if (isMuted) {
       console.log("Speech vocalization muted by preference.");
@@ -297,14 +181,10 @@ export default function App() {
     setIsSpeaking(true);
     triggerVibration(40);
 
-    let cleanText = text
+    const cleanText = text
       .replace(/[\#\*\_`\-]/g, " ")
       .replace(/\[.*?\]/g, "") 
-      .replace(/\(https?:\/\/.*?\)/g, "");
-
-    if (selectedLanguage === "am") {
-      cleanText = convertToSpokenAmharic(cleanText);
-    }
+      .replace(/\(https?:\/\/.*?\)/g, ""); 
 
     const utterances = cleanText.split(/[.!?።]\s+/).filter(s => s.trim().length > 0);
     

@@ -1,13 +1,13 @@
 {
-  "name": "GIRMAIC AI - Ethiopia's Offline-First Helper",
-  "short_name": "GIRMAIC AI",
-  "description": "Ethiopia's professional offline-first AI assistant for custom education, national CV/career development, active STEM classes, and soil recommendation formulas.",
+  "name": "GIRMAIC Ethiopia AI Helper",
+  "short_name": "Girmaic AI",
+  "description": "Premium voice-powered assistant for agriculture, national career training, digital Fayda ID, and STEM lessons in Ethiopia.",
   "start_url": "/",
   "id": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0B0B0B",
-  "theme_color": "#0B0B0B",
+  "background_color": "#0c0a09",
+  "theme_color": "#0c0a09",
   "icons": [
     {
       "src": "/girmaic-logo.jpg",
