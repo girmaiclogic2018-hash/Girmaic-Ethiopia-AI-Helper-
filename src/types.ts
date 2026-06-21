@@ -25,6 +25,11 @@ export interface ChatMessage {
   role: "user" | "model";
   content: string;
   timestamp: string;
+  source?: string;
+  confidenceScore?: number;
+  lastUpdated?: string;
+  verificationBadge?: string;
+  feedback?: "helpful" | "not_helpful";
 }
 
 export interface HelpRequest {
@@ -46,4 +51,8 @@ export interface HelpResponse {
   answer: string;
   breakdown?: ServiceBreakdown;
   suggestedFollowUps?: string[];
+  source?: string;
+  confidenceScore?: number;
+  lastUpdated?: string;
+  verificationBadge?: string;
 }

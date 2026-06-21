@@ -4,9 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LanguageCode } from "../types";
 
 export interface LanguageState {
-  selectedLanguage: LanguageCode | null;
-  setSelectedLanguage: (lang: LanguageCode | null) => void;
-  clearStorage: () => Promise<void>;
+  selectedLanguage: LanguageCode;
+  setSelectedLanguage: (lang: LanguageCode) => void;
 }
 
 // Durable cross-platform storage adapter
@@ -48,7 +47,7 @@ const crossPlatformStorage = {
 export const useLanguageStore = create<LanguageState>()(
   persist(
     (set) => ({
-      // Synchronous initial value lookup for zero-flash Web rendering (returns null if unselected)
+      // Synchronous initial value lookup for zero-flash Web rendering
       selectedLanguage: (() => {
         try {
           if (typeof window !== "undefined" && typeof window.localStorage !== "undefined") {
@@ -61,24 +60,11 @@ export const useLanguageStore = create<LanguageState>()(
             }
           }
         } catch {
-          // Fallback to default null
+          // Fallback to default
         }
-        return null;
+        return "am";
       })(),
-      setSelectedLanguage: (lang: LanguageCode | null) => set({ selectedLanguage: lang }),
-      clearStorage: async () => {
-        try {
-          if (typeof window !== "undefined" && typeof window.localStorage !== "undefined") {
-            window.localStorage.removeItem("girmaic-language-state");
-            window.localStorage.removeItem("girmaic_user_session");
-          }
-          await AsyncStorage.removeItem("girmaic-language-state");
-          await AsyncStorage.removeItem("girmaic_user_session");
-        } catch (e) {
-          console.error("Failed to clear storage keys:", e);
-        }
-        set({ selectedLanguage: null });
-      },
+      setSelectedLanguage: (lang: LanguageCode) => set({ selectedLanguage: lang }),
     }),
     {
       name: "girmaic-language-state",

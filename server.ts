@@ -34,7 +34,75 @@ function getGeminiClient(): GoogleGenAI {
 
 // Map language codes to clear prompt instructions
 const LANGUAGE_INSTRUCTIONS: Record<string, string> = {
-  am: "You must respond ENTIRELY in Amharic (አማርኛ). All text in 'answer', 'explanation', 'steps', 'documents', 'nextActions', 'alternatives' and 'suggestedFollowUps' must be written in fluent Amharic.",
+  am: `You must respond ENTIRELY in Amharic (አማርኛ). All text in 'answer', 'explanation', 'steps', 'documents', 'nextActions', 'alternatives' and 'suggestedFollowUps' must be written in fluent, native-quality Amharic that sounds natural and beautiful.
+
+==================================================
+🌟 GIRMAIC ETHIOPIA AI - MASTER SYSTEM PROMPT FOR AMHARIC
+==================================================
+Your highest priority is producing natural, correct, native-quality Ethiopian Amharic that sounds excellent when spoken aloud by a Text-to-Speech (TTS) engine.
+
+GENERAL RULES:
+- Always use exceptionally fluent and elegant Amharic when the user speaks or requests Amharic.
+- Use correct Amharic grammar, spelling, punctuation, and sentence structures.
+- Speak naturally like a highly educated Ethiopian teacher, professional radio presenter, helpful career coach, or wise advisor.
+- Avoid robotic, literal representations, or mechanical machine-translated language.
+- Avoid unnecessary English words whenever a common Amharic equivalent exists.
+- Use respectful, warm, and culturally appropriate Ethiopian expressions.
+- Keep responses clear, warm, professional, encouraging, and easy to understand. Write complete sentences.
+
+TEXT-TO-SPEECH (TTS) OPTIMIZATION:
+Every response must be optimized for natural vocal playback. Before sending, perform:
+1. Fix grammar and phrasing adjustments automatically.
+2. Fix punctuation automatically to facilitate natural breathing pauses.
+3. Rewrite unnatural wordings into spoken Ethiopian Amharic.
+4. Convert all numbers, coordinates, grades, and values into spoken Amharic words (digits like "23" are strictly prohibited in the text).
+5. Convert dates and times into spoken Amharic.
+6. Expand abbreviations and acronyms.
+7. Remove awkward English-Amharic mixing.
+
+NUMBER CONVERSION RULES:
+Never leave standalone digits or numbers. Write them out in Amharic:
+- 275 -> ሁለት መቶ ሰባ አምስት
+- 413 -> አራት መቶ አስራ ሦስት
+- 2.5 -> ሁለት ነጥብ አምስት
+- 1000 -> አንድ ሺህ
+- 2025 -> ሁለት ሺህ ሃያ አምስት
+
+UNIT CONVERSION RULES:
+- kg -> ኪሎ ግራም
+- km -> ኪሎ ሜትር
+- ha -> ሄክታር
+- % -> በመቶ
+- °C -> ዲግሪ ሴልሺየስ
+- $ -> ዶላር
+
+ABBREVIATION & ENGLISH WORD NORMALIZATION:
+- AI -> ሰው ሠራሽ ብልህነት
+- CV -> የሕይወት ታሪክ
+- STEM -> ሳይንስ፣ ቴክኖሎጂ፣ ምህንድስና እና ሒሳብ
+- NPS -> ኤን ፒ ኤስ
+- Q&A -> ጥያቄ እና መልስ
+- profile -> የግል መገለጫ
+- remote job -> የርቀት ሥራ
+- application -> ማመልከቻ
+- training -> ሥልጠና
+- career -> ሙያ
+- course -> ኮርስ ወይም የትምህርት ኮርስ
+
+SPOKEN STYLE SAMPLES:
+- Bad: በUpwork profile መሙላት አለብህ
+  Good: በአፕወርክ ላይ የግል መገለጫዎን በሙሉ መሙላት ያስፈልጋል።
+- Bad: Task completed.
+  Good: ሥራው በተሳካ ሁኔታ ተጠናቋል።
+- Bad: Greetings! How can I help?
+  Good: ሰላም፣ እንኳን ደህና መጡ። ዛሬ በምን ልርዳዎት?
+
+AGRICULTURE, CAREER, & EDUCATION LOCALIZATION:
+- In farming mode: Use terminology familiar to Ethiopian farmers (e.g. Teff, Urea, NPS recommendation). Explain simply and convert all measurements/hectares to spoken Amharic.
+- In career mode: Use professional Ethiopian workplace language, Dereja/HaHu jobs references, and warm, encouraging realistic advice.
+- In education mode: Explain step-by-step with simple, correct Amharic lessons, and free of unnecessary technical jargon.
+
+Before delivering, silently run: Grammar Correction -> Amharic Normalization -> Number Conversion -> Abbreviation Expansion -> Speech Optimization -> Final response. The returned response must be fully ready for TTS playback with flawless flow.`,
   om: "You must respond ENTIRELY in Afaan Oromo. All text in 'answer', 'explanation', 'steps', 'documents', 'nextActions', 'alternatives' and 'suggestedFollowUps' must be written in fluent Afaan Oromoo.",
   so: "You must respond ENTIRELY in Somali (Soomaali). All text in 'answer', 'explanation', 'steps', 'documents', 'nextActions', 'alternatives' and 'suggestedFollowUps' must be written in fluent Somali.",
   ti: "You must respond ENTIRELY in Tigrinya (ትግርኛ). All text in 'answer', 'explanation', 'steps', 'documents', 'nextActions', 'alternatives' and 'suggestedFollowUps' must be written in fluent Tigrinya.",
@@ -198,7 +266,13 @@ Deliver realistic, actionable guidance matching the JSON schema.`;
 
     let response;
     let lastError: any = null;
-    const modelsToTry = ["gemini-3.5-flash", "gemini-3.1-flash-lite"];
+    const modelsToTry = [
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+      "gemini-3.5-flash",
+      "gemini-3.1-flash-lite",
+      "gemini-1.5-flash"
+    ];
 
     for (const modelName of modelsToTry) {
       try {
@@ -244,9 +318,37 @@ Deliver realistic, actionable guidance matching the JSON schema.`;
                   type: Type.ARRAY,
                   items: { type: Type.STRING },
                   description: "3 highly helpful specific follow-up questions in the chosen language."
+                },
+                source: {
+                  type: Type.STRING,
+                  description: "A specific authoritative citation or organization name validating the information (e.g. 'Ethiopian Ministry of Agriculture', 'EIAR Soil Recommendation Guide', 'Ministry of Education', 'Addis Ababa University', 'Dereja National Portal', 'Ethiojobs Institute', 'Ethiopian Statistics Service', 'National Bank of Ethiopia', 'World Health Organization (WHO)', 'Food and Agriculture Organization (FAO)')."
+                },
+                confidenceScore: {
+                  type: Type.INTEGER,
+                  description: "An integer between 85 and 99 representing the model's confidence or reliability score on this precise instruction."
+                },
+                lastUpdated: {
+                  type: Type.STRING,
+                  description: "The publication/update date, e.g., 'June 2026' or 'May 2026'."
+                },
+                verificationBadge: {
+                  type: Type.STRING,
+                  description: "A standard classification label, e.g., 'Verified Government Source', 'Academic Support', 'FAO Agricultural Standard', 'Ministry of Education Directive'."
                 }
               },
-              required: ["answer", "explanation", "steps", "documents", "nextActions", "alternatives", "suggestedFollowUps"]
+              required: [
+                "answer", 
+                "explanation", 
+                "steps", 
+                "documents", 
+                "nextActions", 
+                "alternatives", 
+                "suggestedFollowUps",
+                "source",
+                "confidenceScore",
+                "lastUpdated",
+                "verificationBadge"
+              ]
             }
           }
         });

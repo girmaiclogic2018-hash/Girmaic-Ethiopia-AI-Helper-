@@ -3,7 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GIRMAIC Ethiopia AI Helper</title>
+    <title>GIRMAIC AI - Ethiopia's Offline-First AI Helper</title>
+    <meta name="description" content="Ethiopia's professional offline-first AI assistant for custom education, national CV/career development, active STEM classes, and soil recommendation formulas." />
+    
+    <!-- PWA Linkages -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0B0B0B" />
+    <meta name="background-color" content="#0B0B0B" />
+    
+    <!-- Apple Mobile Web App Support / iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="GIRMAIC AI" />
+    <link rel="apple-touch-icon" href="/girmaic-logo.jpg" />
+    
+    <!-- Open Graph (Facebook / Social Sharing) -->
+    <meta property="og:title" content="GIRMAIC AI - Ethiopia's Offline-First AI Helper" />
+    <meta property="og:description" content="An advanced voice-powered assistant built for education, career development, STEM classes, and soil analysis in Ethiopia." />
+    <meta property="og:image" content="/girmaic-logo.jpg" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Social Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GIRMAIC AI" />
+    <meta name="twitter:description" content="Ethiopia's advanced offline-first web assistant with bilingual voice readout capacities." />
+    <meta name="twitter:image" content="/girmaic-logo.jpg" />
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Girmaic Service Worker registered:', reg.scope))
+            .catch(err => console.error('Girmaic Service Worker registration failed:', err));
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
